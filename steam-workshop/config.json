@@ -1,0 +1,8 @@
+{
+  "steamPublishedID": "3625633843",
+  "title": "Show Boss Chest Tooltips",
+  "description": "When viewing a boss chest, display all three relic tooltips.\n\nPrimarily for use with [url\u003dhttps://steamcommunity.com/sharedfiles/filedetails/?id\u003d1610759491]Slay the Streamer[/url], so chat can see what modded relics do.\n\nGitHub: https://github.com/dvide/StS-ShowBossChestTips",
+  "visibility": "public",
+  "changeNote": "",
+  "tags": []
+}
