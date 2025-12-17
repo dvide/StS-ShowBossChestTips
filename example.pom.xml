@@ -6,7 +6,7 @@
 
     <name>Show Boss Chest Tooltips</name>
     <description>When viewing a boss chest, display all three relic tooltips.\n\nPrimarily for use with Slay the Streamer, so chat can see what modded relics do.</description>
-    <version>0.1.0</version>
+    <version>0.1.2</version>
 
     <properties>
         <StSMod.id>ShowBossChestTips</StSMod.id>
