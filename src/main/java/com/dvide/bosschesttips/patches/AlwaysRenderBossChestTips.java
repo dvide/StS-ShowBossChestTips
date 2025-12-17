@@ -103,15 +103,14 @@ public class AlwaysRenderBossChestTips {
         }
 
         public static void adjustVoteTextPositions_Impl(final int callNum, final SpriteBatch sb, final BitmapFont font, final String msg, float x, float y, final Color c) {
-            // We are rendering Twitch voting remaining time, so we want to adjust its
-            // position towards the left. Otherwise bottom relic tip can often overlap.
             if (callNum == 3) {
-                x = (float)Settings.WIDTH * 0.275f;
-                y = (float)Settings.HEIGHT * 0.175f;
+                // We are rendering Twitch voting remaining time, so we want to adjust its
+                // position towards the left. Otherwise bottom relic tip can often overlap.
+                FontHelper.renderFontCentered(sb, font, msg, (float)Settings.WIDTH * 0.275f, (float)Settings.HEIGHT * 0.175f, c);
+            } else {
+                final Point2D p = getAdjustedRelicSlotPosition(callNum, true, x, y);
+                FontHelper.renderFontCentered(sb, font, msg, p.x, p.y - 75.0f * Settings.scale, c);
             }
-
-            final Point2D p = getAdjustedRelicSlotPosition(callNum, true, x, y);
-            FontHelper.renderFontCentered(sb, font, msg, p.x, p.y, c);
         }
     }
 
