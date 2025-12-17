@@ -1,0 +1,261 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.dvide.bosschesttips</groupId>
+    <artifactId>ShowBossChestTips</artifactId>
+
+    <name>Show Boss Chest Tooltips</name>
+    <description>When viewing a boss chest, display all three relic tooltips.\n\nPrimarily for use with Slay the Streamer, so chat can see what modded relics do.</description>
+    <version>0.1.0</version>
+
+    <properties>
+        <StSMod.id>ShowBossChestTips</StSMod.id>
+        <StSMod.author>dvide</StSMod.author>
+
+        <!-- Local repository for StS jarfile dependencies -->
+        <StSJars.repoId>sts-jars</StSJars.repoId>
+        <StSJars.repoUrl>${project.basedir}/sts-jars</StSJars.repoUrl>
+
+        <StSJars.SlayTheSpire.groupId>com.megacrit.cardcrawl</StSJars.SlayTheSpire.groupId>
+        <StSJars.SlayTheSpire.artifactId>desktop-1.0</StSJars.SlayTheSpire.artifactId>
+        <StSJars.SlayTheSpire.version>12-18-2022</StSJars.SlayTheSpire.version>
+        <StSJars.SlayTheSpire.jarfile>${sts.path}/desktop-1.0.jar</StSJars.SlayTheSpire.jarfile>
+
+        <StSJars.ModTheSpire.groupId>com.evacipated.cardcrawl</StSJars.ModTheSpire.groupId>
+        <StSJars.ModTheSpire.artifactId>ModTheSpire</StSJars.ModTheSpire.artifactId>
+        <StSJars.ModTheSpire.version>3.30.3</StSJars.ModTheSpire.version>
+        <StSJars.ModTheSpire.jarfile>${steam.path}/workshop/content/646570/1605060445/ModTheSpire.jar</StSJars.ModTheSpire.jarfile>
+
+        <StSJars.BaseMod.groupId>basemod</StSJars.BaseMod.groupId>
+        <StSJars.BaseMod.artifactId>BaseMod</StSJars.BaseMod.artifactId>
+        <StSJars.BaseMod.version>5.56.0</StSJars.BaseMod.version>
+        <StSJars.BaseMod.jarfile>${steam.path}/workshop/content/646570/1605833019/BaseMod.jar</StSJars.BaseMod.jarfile>
+
+        <StSJars.SlayTheStreamer.groupId>chronometry</StSJars.SlayTheStreamer.groupId>
+        <StSJars.SlayTheStreamer.artifactId>SlayTheStreamer</StSJars.SlayTheStreamer.artifactId>
+        <StSJars.SlayTheStreamer.version>1.5</StSJars.SlayTheStreamer.version>
+        <StSJars.SlayTheStreamer.jarfile>${steam.path}/workshop/content/646570/1610759491/Slay the Streamer.jar</StSJars.SlayTheStreamer.jarfile>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>${StSJars.repoId}</id>
+            <url>file://${StSJars.repoUrl}</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>${StSJars.SlayTheSpire.groupId}</groupId>
+            <artifactId>${StSJars.SlayTheSpire.artifactId}</artifactId>
+            <version>${StSJars.SlayTheSpire.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${StSJars.ModTheSpire.groupId}</groupId>
+            <artifactId>${StSJars.ModTheSpire.artifactId}</artifactId>
+            <version>${StSJars.ModTheSpire.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${StSJars.BaseMod.groupId}</groupId>
+            <artifactId>${StSJars.BaseMod.artifactId}</artifactId>
+            <version>${StSJars.BaseMod.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${StSJars.SlayTheStreamer.groupId}</groupId>
+            <artifactId>${StSJars.SlayTheStreamer.artifactId}</artifactId>
+            <version>${StSJars.SlayTheStreamer.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>ModTheSpire.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>resources.dvide.bosschesttips/images/**</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <!-- On validate build phase, install StS jarfile dependencies into local maven repository -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.4</version>
+
+                <executions>
+                    <execution>
+                        <id>install-SlayTheSpire</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                            <localRepositoryPath>${StSJars.repoUrl}</localRepositoryPath>
+                            <groupId>${StSJars.SlayTheSpire.groupId}</groupId>
+                            <artifactId>${StSJars.SlayTheSpire.artifactId}</artifactId>
+                            <version>${StSJars.SlayTheSpire.version}</version>
+                            <file>${StSJars.SlayTheSpire.jarfile}</file>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-ModTheSpire</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                            <localRepositoryPath>${StSJars.repoUrl}</localRepositoryPath>
+                            <groupId>${StSJars.ModTheSpire.groupId}</groupId>
+                            <artifactId>${StSJars.ModTheSpire.artifactId}</artifactId>
+                            <version>${StSJars.ModTheSpire.version}</version>
+                            <file>${StSJars.ModTheSpire.jarfile}</file>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-BaseMod</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                            <localRepositoryPath>${StSJars.repoUrl}</localRepositoryPath>
+                            <groupId>${StSJars.BaseMod.groupId}</groupId>
+                            <artifactId>${StSJars.BaseMod.artifactId}</artifactId>
+                            <version>${StSJars.BaseMod.version}</version>
+                            <file>${StSJars.BaseMod.jarfile}</file>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-SlayTheStreamer</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                            <localRepositoryPath>${StSJars.repoUrl}</localRepositoryPath>
+                            <groupId>${StSJars.SlayTheStreamer.groupId}</groupId>
+                            <artifactId>${StSJars.SlayTheStreamer.artifactId}</artifactId>
+                            <version>${StSJars.SlayTheStreamer.version}</version>
+                            <file>${StSJars.SlayTheStreamer.jarfile}</file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.5.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                    <release>8</release>
+                    <compilerArgument>-Xlint:-options</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <escapeWindowsPaths>false</escapeWindowsPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="target/${project.artifactId}.jar" tofile="${sts.path}/mods/${project.artifactId}.jar" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <steam.path>C:/Program Files (x86)/Steam/steamapps</steam.path>
+                <sts.path>${steam.path}/common/SlayTheSpire</sts.path>
+            </properties>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <steam.path>${user.home}/Library/Application Support/Steam/steamapps</steam.path>
+                <sts.path>${steam.path}/common/SlayTheSpire/SlayTheSpire.app/Contents/Resources</sts.path>
+            </properties>
+        </profile>
+    </profiles>
+</project>
