@@ -3,7 +3,6 @@ package com.dvide.bosschesttips.patches;
 import basemod.ReflectionHacks;
 import chronometry.patches.NoSkipBossRelicPatch;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -12,7 +11,6 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
-import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.PowerTip;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
@@ -30,9 +28,6 @@ import static com.dvide.bosschesttips.util.Reflection.implMethod;
 
 @SuppressWarnings("unused")
 public class AlwaysRenderBossChestTips {
-    private static final boolean TEST_TWITCH_MODE = true;
-    private static final Texture startScreenImage = ImageMaster.loadImage("resources.dvide.bosschesttips/images/FacesOfEvil.png");
-
     public static ArrayList<AbstractRelic> bossRelics = null;
     public static ArrayList<Optional<ArrayList<PowerTip>>> firstTipsOnly = null;
 
@@ -81,30 +76,6 @@ public class AlwaysRenderBossChestTips {
         public static void adjustRelicSpawnPositions_Impl(final int relicSlot, boolean twitchVoterPresent, final AbstractRelic relic, float x, float y) {
             final Point2D p = getAdjustedRelicSlotPosition(relicSlot, twitchVoterPresent, x, y);
             relic.spawn(p.x, p.y);
-        }
-    }
-
-    @SpirePatch2(clz = BossRelicSelectScreen.class, method = "render")
-    public static class BossRelicSelectScreen_render_Patches {
-        @SpirePostfixPatch
-        public static void renderMockTwitchVotes(final SpriteBatch sb) {
-            if (TEST_TWITCH_MODE) {
-                sb.draw(startScreenImage, Settings.WIDTH / 2.0f, 0.0f);
-
-                final Point2D slot1 = getAdjustedRelicSlotPosition(0, true);
-                final Point2D slot2 = getAdjustedRelicSlotPosition(1, true);
-                final Point2D slot3 = getAdjustedRelicSlotPosition(2, true);
-                final Point2D seconds = new Point2D((float)Settings.WIDTH * 0.275f, (float)Settings.HEIGHT * 0.175f);
-
-                String msg = "#0: 14 (9%)";
-                FontHelper.renderFontCentered(sb, FontHelper.panelNameFont, msg, slot1.x, slot1.y - 75.0f * Settings.scale, Color.WHITE);
-                msg = "#1: 100 (69%)";
-                FontHelper.renderFontCentered(sb, FontHelper.panelNameFont, msg, slot2.x, slot2.y - 75.0f * Settings.scale, Color.WHITE);
-                msg = "#2: 30 (20%)";
-                FontHelper.renderFontCentered(sb, FontHelper.panelNameFont, msg, slot3.x, slot3.y - 75.0f * Settings.scale, Color.WHITE);
-
-                FontHelper.renderFontCentered(sb, FontHelper.panelNameFont, BossRelicSelectScreen.TEXT[4] + 26 + BossRelicSelectScreen.TEXT[5], seconds.x, seconds.y, Color.WHITE);
-            }
         }
     }
 
@@ -273,16 +244,16 @@ public class AlwaysRenderBossChestTips {
         float x, y;
         switch (relicSlot) {
             case 0:
-                x = slot2x - (twitchVoterPresent || TEST_TWITCH_MODE ? 15.0f * Settings.scale : 0.0f);
-                y = slot1y + (twitchVoterPresent || TEST_TWITCH_MODE ? 20.0f * Settings.scale : 0.0f);
+                x = slot2x - (twitchVoterPresent ? 15.0f * Settings.scale : 0.0f);
+                y = slot1y + (twitchVoterPresent ? 20.0f * Settings.scale : 0.0f);
                 break;
             case 1:
-                x = slot3x + (twitchVoterPresent || TEST_TWITCH_MODE ? 15.0f * Settings.scale : 0.0f);
-                y = slot1y + (twitchVoterPresent || TEST_TWITCH_MODE ? 20.0f * Settings.scale : 0.0f);
+                x = slot3x + (twitchVoterPresent ? 15.0f * Settings.scale : 0.0f);
+                y = slot1y + (twitchVoterPresent ? 20.0f * Settings.scale : 0.0f);
                 break;
             case 2:
                 x = slot1x;
-                y = slot2y + (twitchVoterPresent || TEST_TWITCH_MODE ? 20.0f * Settings.scale : 0.0f);
+                y = slot2y + (twitchVoterPresent ? 20.0f * Settings.scale : 0.0f);
                 break;
             default:
                 // This shouldn't ever trigger
