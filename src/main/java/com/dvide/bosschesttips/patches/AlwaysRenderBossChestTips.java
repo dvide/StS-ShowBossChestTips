@@ -170,6 +170,14 @@ public class AlwaysRenderBossChestTips {
         float x, y;
         switch (bossRelicIndex) {
             case 0:
+                // Risk of Relics: Focused Convergence means there is only one boss relic choice,
+                // so we will just render this tooltip in the normal location from the base game.
+                if (Loader.isModLoaded("RiskOfRelics") && AbstractDungeon.player.hasRelic("riskOfRelics:FocusedConvergence")) {
+                    x = Settings.WIDTH * 0.63f;
+                    y = Settings.HEIGHT * 0.63f;
+                    break;
+                }
+
                 x = Settings.WIDTH * 0.37f - tipBoxWidth;
                 y = Settings.HEIGHT * 0.63f;
                 break;
@@ -248,6 +256,14 @@ public class AlwaysRenderBossChestTips {
         float x, y;
         switch (relicSlot) {
             case 0:
+                // Risk of Relics: Focused Convergence means there is only one boss relic choice.
+                // It is repositioned in the middle, so use same position from that mod here too.
+                if (Loader.isModLoaded("RiskOfRelics") && AbstractDungeon.player.hasRelic("riskOfRelics:FocusedConvergence")) {
+                    x = slot1x;
+                    y = AbstractDungeon.floorY + 292.0f * Settings.scale;
+                    break;
+                }
+
                 x = slot2x - (twitchVoterPresent ? 15.0f * Settings.scale : 0.0f);
                 y = slot1y + (twitchVoterPresent ? 20.0f * Settings.scale : 0.0f);
                 break;
