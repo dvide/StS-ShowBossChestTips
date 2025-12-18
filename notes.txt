@@ -1,13 +1,11 @@
 
 In RenderTwitchVotes_Patches.adjustVoteTextPositions, we could use an implMethod1 and an implMethod2 to get two different implementations depending on callNum. So before we call `m.replace`, we would check if (callNum == 3) then replace it with an impl2 method, otherwise replace it with an impl1 method. The impl2 method then would just render the Twitch vote remaining time. That would mean at game run time, it doesn't have to test for if callNum == 3 on every frame. It will only be at patching time that this occurs.
 
-In RenderTwitchVotes_Patches.adjustVoteTextPositions, for FontHelper.renderFontCentered calls, it might be better to just get the relic positions using relic.currentX and relic.currentY. We already know the relicSlot index so we can just get the correct relic from the bossRelics list and retrieve its position from there. Then remember to subtract 75 from the y position.
+(A) In RenderTwitchVotes_Patches.adjustVoteTextPositions, for FontHelper.renderFontCentered calls, it might be better to just get the relic positions using relic.currentX and relic.currentY. We already know the relicSlot index so we can just get the correct relic from the bossRelics list and retrieve its position from there. Then remember to subtract 75 from the y position.
 
-(A) For the above two, it might be best to avoid using implMethods entirely and just replace the x and y coordinate using `$4 =` and `$5 =` before calling a `$proceed($$)`. Since we can just get x and y positions from the relics in the relic list fairly simply, it isn't complicated to replace.
+For the above two, it might be best to avoid using implMethods entirely and just replace the x and y coordinate using `$4 =` and `$5 =` before calling a `$proceed($$)`. Since we can just get x and y positions from the relics in the relic list fairly simply, it isn't complicated to replace.
 
 ---
-
-In CardCrawlGame_render_Patches.renderBossChestTips(), move the AbstractDungeon.isPlayerInDungeon() check to beginning of if statement.
 
 Maybe check if !AbstractDungeon.isScreenUp to our CardCrawlGame_render_Patches.renderBossChestTips(). Now sure what it does but it is checked in AbstractRelic.render() before it calls renderBossTip(), so maybe that's important.
 
@@ -15,21 +13,10 @@ AbstractRelic.render() also checks if AbstractDungeon.screen == AbstractDungeon.
 
 ---
 
-Investigated compatability with:
-    1) Risk of Relics: Focused Convergence (reduces boss chest relic reward to one choice)
-    2) Theabest's Invisible Relics mod (probably shouldn't display tooltips for invisible relics)
-    3) Theabest's Boss Relics: Invisibility Cloak (same reason as above)
+Investigated compatibility with Risk of Relics: Focused Convergence (reduces boss chest relic reward to one choice):
 
-For 1):
-
-FocusedConvergence FCPatches removes relic2 and relic3 from BossRelicSelectScreen.relics before we remember the relics. So we don't have to do anything special there. FCPatches also moves relic1's position into the middle of the screen.
+FCPatches removes relic2 and relic3 from BossRelicSelectScreen.relics before we remember the relics. So we don't have to do anything special there. FCPatches also moves relic1's position into the middle of the screen.
 
 FCPatches doesn't move the twitch votes, however. In our RenderTwitchVotes_Patches.adjustVoteTextPositions_Impl(), we could handle it ourselves using "if (Loader.isModLoaded("RiskOfRelics") && AbstractDungeon.player.hasRelic(FocusedConvergence.ID)). If so, and then if callNum == 0, we should set `x = SLOT_1_X` and `y = AbstractDungeon.floorY + 292.0F * Settings.scale - 75.0f * Settings.scale` (matching FCPatches relic position, but moved down by 75). Alternatively we can do `relic.currentX` and `relic.currentY - 75.0f * Settings.scale`, where relic is bossRelics.get(0). If we do the above change (A), this would be handled automatically and we wouldn't even need to test for whether the player has FocusedConvergence here.
 
 Our mod will only render one tooltip with FocusedConvergence correctly, however the tooltip will be on the left, as the first relic's tooltip is always rendered on the left. It would probably be better if it's rendered on the right, as this is the default tooltip position in the base game. For this, in our renderBossRelicTip() function on case 0, we could check if (Loader.isModLoaded("RiskOfRelics") && AbstractDungeon.player.hasRelic(FocusedConvergence.ID)). If so, then set x and y to same as case 1 (Settings.WIDTH * 0.63f, Settings.HEIGHT * 0.63f), which is the same as the base-game's position taken from AbstractRelic.renderBossTip().
-
-For 2 and 3):
-
-See both mods' HideRelicPatches.AbstractRelicRenderBossTipPatch: this already disables rendering the boss relic tip the normal way. Our mod would still show them in our custom way, however. In our CardCrawlGame_render_Patches.renderBossChestTips(), we should just check for if (Loader.isModLoaded("invisiblerelics") || (Loader.isModLoaded("tbbossrelics") && AbstractDungeon.player.hasRelic(InvisibilityCloak.ID)), and then not render anything if that's the case.
-
-Tbbossrelics HideRelicPatches only seem to take effect once the player has the Invisibility Cloak relic in their possesion. So presumably before the player has the relic, it would still render the invisiblity cloak's tooltip (i.e. if the invisiblity cloak is presented to the player in a boss chest). Test this to make sure though. If so, then we don't have to do any special handling for if the invisiblity cloak is one of the bossRelic choices.

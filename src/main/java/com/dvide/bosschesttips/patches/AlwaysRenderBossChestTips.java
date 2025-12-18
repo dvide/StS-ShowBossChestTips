@@ -5,6 +5,7 @@ import chronometry.patches.NoSkipBossRelicPatch;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.evacipated.cardcrawl.modthespire.patcher.PatchingException;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -133,7 +134,11 @@ public class AlwaysRenderBossChestTips {
     public static class CardCrawlGame_render_Patches {
         @SpireInsertPatch(locator = TipHelper_render_Locator.class)
         public static void renderBossChestTips(final CardCrawlGame __instance) {
-            if (AbstractDungeon.screen == AbstractDungeon.CurrentScreen.BOSS_REWARD && AbstractDungeon.isPlayerInDungeon() && bossRelics != null && !Settings.hidePopupDetails && !CardCrawlGame.relicPopup.isOpen && !CardCrawlGame.cardPopup.isOpen) {
+            if (AbstractDungeon.isPlayerInDungeon() && AbstractDungeon.screen == AbstractDungeon.CurrentScreen.BOSS_REWARD && bossRelics != null && !Settings.hidePopupDetails && !CardCrawlGame.relicPopup.isOpen && !CardCrawlGame.cardPopup.isOpen) {
+                if (Loader.isModLoaded("invisiblerelics") || (Loader.isModLoaded("tbbossrelics") && AbstractDungeon.player.hasRelic("tbbossrelics:InvisibilityCloak"))) {
+                    return;
+                }
+
                 final SpriteBatch sb = ReflectionHacks.getPrivate(__instance, CardCrawlGame.class, "sb");
                 renderThreeBossRelicTips(sb);
             }
