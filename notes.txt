@@ -1,0 +1,3 @@
+Investigate compatability with:
+    Risk of Relics: Focused Convergence (reduces boss chest relic reward to one choice)
+    Theabest's Invisible Relics (probably shouldn't display tooltips for invisible relics)
